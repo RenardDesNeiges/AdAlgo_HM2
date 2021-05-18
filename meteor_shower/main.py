@@ -3,7 +3,9 @@
 import sys
 import math
 import random
+import copy
 
+# contracts an edge according to Karger's algorithm's edge contraction procedure
 # works by reference, do not deepcopy before calling
 def contract(E,ec,V):
     v1 = ec[0]
@@ -21,19 +23,32 @@ def contract(E,ec,V):
     # remove the second vertex from the vertices list
     V.remove(v2)
 
+# modified Karger-Stein algorithm
 # note, deepcopy the graph before calling the function because it will modify the original datastructures
 def modKargStein(E,V,n,alpha,C):
     if n == 3 : 
         # pick cut uniformly at random in V choose 2
-        pass
+        i = random.randrange(3)
+        j = (i + random.randrange(1,3))%3
+        ec = [V[i], V[j]]   #critical edge uniformly picked at random among possible cuts
+        contract(E,ec,V)    # contract the graph
+
     else:
         for i in range(1, n- math.ceil(math.pow(2, 1/(2+2*alpha) ) ) ):
             # choose e uniformly at random in E, contract E by e
-
-            ec = E[random.randrange(len(E))]    # uniformly random edge
-            contract(E,ec,V)
-            pass
+            ec = E[random.randrange(len(E))]    # choose an edge uniformly at random 
+            contract(E,ec,V)                    # contract it in G
+        
+        # run the procedure recursively twice
+        E1 = copy.deepcopy(E)
+        V1 = copy.deepcopy(V)
+        modKargStein(E1, V1, len(V1), alpha, C)
+        E2 = copy.deepcopy(E)
+        V2 = copy.deepcopy(V)
+        modKargStein(E2, V2, len(V2), alpha, C)
+        return(min([len(E1),len(E2)]))
         # Call ModKargStein twice on the output of the procedure so far, return the critical sets that are C or C+1
+
 """
     Parsing the input 
 """
@@ -65,7 +80,14 @@ for line in sys.stdin:
 
     lnb = lnb + 1
 
-print(V)
+minC = m
 
-contract(E,[1,2],V)
-print(V)
+## find a min-cut 
+for i in range(math.ceil(math.pow(n,3)*math.log(n))):
+    Ei = copy.deepcopy(E)
+    Vi = copy.deepcopy(V)
+    nmc = modKargStein(Ei,Vi,n,1,m)
+    if nmc < minC:
+        nmc = minC
+
+print(nmc)
