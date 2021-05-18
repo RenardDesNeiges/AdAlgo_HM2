@@ -44,8 +44,8 @@ def modKargStein(E,V,n,alpha):
         E1 = copy.deepcopy(E)
         V1 = copy.deepcopy(V)
         modKargStein(E1, V1, len(V1), alpha)
-        E2 = copy.deepcopy(E)
-        V2 = copy.deepcopy(V)
+        E2 = E
+        V2 = V
         modKargStein(E2, V2, len(V2), alpha)
 
         # return the critical sets 
@@ -55,6 +55,8 @@ def modKargStein(E,V,n,alpha):
 """
     Parsing the input 
 """
+
+start = time.time()
 
 lnb = 0
 
@@ -87,13 +89,13 @@ for line in sys.stdin:
 C = m
 
 O = 1
-start = time.time()
+
 
 critsets = []
 
 ## find a min-cut 
 # for i in range(O * math.ceil(math.pow(n,3)*math.log(n))):
-while time.time() - start < 3.8:
+while time.time() - start < 2.4:
     Ei = copy.deepcopy(E)
     Vi = copy.deepcopy(V)
     E1, E2 = modKargStein(Ei,Vi,n,1)
@@ -123,4 +125,7 @@ for i in range(len(critsets) - 1, -1, -1):
             Es = critsets[i]
             if len(Es) == C:
                 del critsets[i]
-print(len(critsets))
+l = len(critsets)
+if l > 10:
+    l = 10
+print(l)
