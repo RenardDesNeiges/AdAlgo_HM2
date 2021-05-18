@@ -4,6 +4,7 @@ import sys
 import math
 import random
 import copy
+import time
 
 # contracts an edge according to Karger's algorithm's edge contraction procedure
 # works by reference, do not deepcopy before calling
@@ -46,7 +47,8 @@ def modKargStein(E,V,n,alpha,C):
         E2 = copy.deepcopy(E)
         V2 = copy.deepcopy(V)
         modKargStein(E2, V2, len(V2), alpha, C)
-        return(min([len(E1),len(E2)]))
+        # print([len(E1),len(E2)])
+        return(min(len(E1),len(E2)))
         # Call ModKargStein twice on the output of the procedure so far, return the critical sets that are C or C+1
 
 """
@@ -82,12 +84,17 @@ for line in sys.stdin:
 
 minC = m
 
+O = 1
+start = time.time()
+
 ## find a min-cut 
-for i in range(math.ceil(math.pow(n,3)*math.log(n))):
+for i in range(O * math.ceil(math.pow(n,3)*math.log(n))):
+# while time.time() - start < 3.8:
     Ei = copy.deepcopy(E)
     Vi = copy.deepcopy(V)
     nmc = modKargStein(Ei,Vi,n,1,m)
-    if nmc < minC:
-        nmc = minC
 
-print(nmc)
+    if nmc < minC:
+        minC = nmc
+
+print(minC)
