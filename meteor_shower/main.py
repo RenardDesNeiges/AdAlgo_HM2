@@ -1,14 +1,50 @@
 #! /Library/Frameworks/Python.framework/Versions/3.8/bin/python3.8
 
 import sys
+import math
+import random
+
+# works by reference, do not deepcopy before calling
+def contract(E,ec,V):
+    v1 = ec[0]
+    v2 = ec[1]
+    # contraction procedure over edgelist
+    for i in range(len(E) - 1, -1, -1):
+        e = E[i]
+        if e == ec or e == [v2,v1]:
+            del E[i]
+            continue
+        if e[0] == v2:
+            e[0] = v1
+        if e[1] == v2:
+            e[1] = v1
+    # remove the second vertex from the vertices list
+    V.remove(v2)
+
+# note, deepcopy the graph before calling the function because it will modify the original datastructures
+def modKargStein(E,V,n,alpha,C):
+    if n == 3 : 
+        # pick cut uniformly at random in V choose 2
+        pass
+    else:
+        for i in range(1, n- math.ceil(math.pow(2, 1/(2+2*alpha) ) ) ):
+            # choose e uniformly at random in E, contract E by e
+
+            ec = E[random.randrange(len(E))]    # uniformly random edge
+            contract(E,ec,V)
+            pass
+        # Call ModKargStein twice on the output of the procedure so far, return the critical sets that are C or C+1
+"""
+    Parsing the input 
+"""
 
 lnb = 0
 
-n = 0 #number of bridgeports
-m = 0 #number of bridges
+n = 0 # number of vertices
+m = 0 # number of edges
 
-edges = []
-adjMat = []
+E = []
+V = []
 
 # parse the input buffer and create the edge and delta lists
 for line in sys.stdin:
@@ -18,18 +54,18 @@ for line in sys.stdin:
         n = int(lst[0])
         m = int(lst[1])
 
-        for i in range(2*n+2):          # We create a graph with 2n+2 vertices (1 per port + a source and a sink)
-            adjMat.append([0]*(2*n+2))
-
-        # connect every port to the source/sink with a vertex of capacity 2
-        for i in range(n):
-            adjMat[0][i+1] = 2
-            adjMat[i+n+1][2*n+1] = 2
+        # we create the vertices list
+        for i in range(1,n+1):
+            V.append(i)
 
     else:
-        e1 = int(lst[0])         # edge 0 is source
-        e2 = int(lst[1]) + n     # edge 0 is source
-        adjMat[e1][e2] = 1
-
+        e1 = int(lst[0])
+        e2 = int(lst[1])
+        E.append([e1,e2])
 
     lnb = lnb + 1
+
+print(V)
+
+contract(E,[1,2],V)
+print(V)
